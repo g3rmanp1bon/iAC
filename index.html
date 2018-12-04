@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Infrastructure as Code</title>
+<meta name="author" content="(German Pabon)"/>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/reveal.js/3.0.0/css/reveal.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/reveal.js/3.0.0/css/theme/night.css" id="theme"/>
+
+<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+<script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = 'https://cdn.jsdelivr.net/reveal.js/3.0.0/css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+</script>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section id="sec-title-slide">
+<h1>Infrastructure as Code</h1>
+<h2>German Pabon</h2>
+<h2><a href="mailto:@german_pabon">@german_pabon</a></h2>
+<h2></h2>
+</section>
+
+<section id="sec-1">
+
+<h2 >Quien soy</h2>
+<ul >
+<li class="fragment roll-in">Cloud Solution Engineer</li>
+<li class="fragment roll-in">Oracle Cloud Infrastructure</li>
+
+</ul>
+
+</section>
+<!--<section id="sec-2">
+
+<h2 >Intro</h2>
+<ul >
+<li class="fragment roll-in">Provisionar cualquier aplicación en cualquier infrastructura</li>
+
+</ul>
+
+</section>-->
+<section id="sec-3">
+
+<h2 >Qué es IaC</h2>
+<ul >
+<li class="fragment roll-in">Enfoque moderno para gestionar infraestructura</li>
+<li class="fragment roll-in">Tratar infraestructura como software</li>
+<li class="fragment roll-in">Automatización</li>
+
+</ul>
+
+</section>
+<section id="sec-4">
+
+<h2 >Qué no es IaC</h2>
+<ul >
+<li class="fragment roll-in">cloud</li>
+<li class="fragment roll-in">Palabra pegadiza(ex. Agile, DevOps)</li>
+<li class="fragment roll-in">Tecnología</li>
+<li class="fragment roll-in">Paradigma</li>
+
+</ul>
+
+</section>
+<section id="sec-5">
+
+<h2 >Antes de IaC&#x2026;</h2>
+<ul >
+<li class="fragment roll-in">Configuración manual de servers (ambientación)</li>
+<li class="fragment roll-in">Despliegues manuales</li>
+<li class="fragment roll-in">Infraestructura sin documentación</li>
+<li class="fragment roll-in">IT SLAs</li>
+
+</ul>
+
+</section>
+<section id="sec-6">
+
+<h2 >Propósito de IaC</h2>
+<ul >
+<li class="fragment roll-in">Consistencia</li>
+<li class="fragment roll-in">Proceso repetitivo</li>
+<li class="fragment roll-in">Automatización desatentida</li>
+<li class="fragment roll-in">NoOps</li>
+
+</ul>
+
+</section>
+<section id="sec-7">
+
+<h2 >Beneficios</h2>
+<ul >
+<li class="fragment roll-in">Despliegue Continuo</li>
+<li class="fragment roll-in">Ambientes homogéneos (Dev/production)</li>
+<li class="fragment roll-in">Feedback rápido</li>
+<li class="fragment roll-in">Sistemas / infraestructura desechable</li>
+<li class="fragment roll-in">“According to the 2016 State of DevOps Report, 
+                             organizations that use DevOps practices, such as IAC, 
+                             deploy 200 times more frequently, recover from failures 24 times faster, 
+                             and have lead times that are 2,555 times lower.”
+Excerpt From: Yevgeniy Brikman. “Terraform: Up and Running.” iBooks.</li>
+
+</ul>
+
+</section>
+<section id="sec-8">
+
+<h2 >Cómo hacer IaC ?</h2>
+<ul >
+<li class="fragment roll-in">Versionar todo (trazabilidad, rollbacks)</li>
+<li class="fragment roll-in">Cambios incrementales</li>
+<li class="fragment roll-in">Test driven</li>
+<li class="fragment roll-in">Auto documentar</li>
+<li class="fragment roll-in">Uso de templates (archivos de definiciones)</li>
+
+</ul>
+
+</section>
+<section id="sec-9">
+
+<h2 >Tipos de herramientas</h2>
+<ul >
+<li class="fragment roll-in">Definición (Terraform, Ansible)</li>
+<li class="fragment roll-in">Configuración/provisionamiento (Chef,Puppet,Ansible)</li>
+<li class="fragment roll-in">Alerting/logging/monitoring (ELK)</li>
+
+</ul>
+
+</section>
+<section id="sec-10">
+
+<h2 >Definicion</h2>
+<p>
+Ex: Terraform
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-text">resource "oci_core_instance" "AppAD1" {
+  availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[0],"name")}"
+  compartment_id      = "${var.compartment_ocid}"
+  display_name        = "AppAD1"
+  image               = "${var.InstanceImageOCID[var.region]}"
+  shape               = "${var.AppShape}"
+
+  create_vnic_details {
+    subnet_id = "${oci_core_subnet.PrivSubnet1AD1.id}"
+
+    # assign_public_ip = true
+  }
+
+  metadata {
+    ssh_authorized_keys = "${var.ssh_public_key}"
+    user_data           = "${base64encode(file(var.AppBootStrap))}"
+  }
+}
+</pre>
+</div>
+<p>
+<a href="https://github.com/abannang/OCI/blob/master/memcached-OCI/Memcache%20TF%20scenario-1/compute.tf">https://github.com/abannang/OCI/blob/master/memcached-OCI/Memcache%20TF%20scenario-1/compute.tf</a>
+</p>
+
+</section>
+<section id="sec-11">
+
+<h2 >Definition</h2>
+<p>
+Ex: Ansible
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-yaml">- <span style="color: #ffffff;">name</span>: Launch an OCI instance (Compute)
+  <span style="color: #ffffff;">oci_instance</span>:
+    <span style="color: #ffffff;">availability_domain</span>: <span style="color: #B3DE81;">"{{ instance_ad }}"</span>
+    <span style="color: #ffffff;">compartment_id</span>: <span style="color: #B3DE81;">"{{ instance_compartment }}"</span>
+    <span style="color: #ffffff;">name</span>: <span style="color: #B3DE81;">"my_test_instance"</span>
+    <span style="color: #ffffff;">image_id</span>: <span style="color: #B3DE81;">"{{ instance_image }}"</span>
+    <span style="color: #ffffff;">shape</span>: <span style="color: #B3DE81;">"{{ instance_shape }}"</span>
+    <span style="color: #ffffff;">vnic</span>:
+      <span style="color: #ffffff;">assign_public_ip</span>: <span style="color: #B3DE81;">True</span>
+      <span style="color: #ffffff;">hostname_label</span>: <span style="color: #B3DE81;">"{{ instance_hostname }}"</span>
+      <span style="color: #ffffff;">subnet_id</span>: <span style="color: #B3DE81;">"{{ instance_subnet_id }}"</span> 
+    <span style="color: #ffffff;">metadata</span>:
+      <span style="color: #ffffff;">ssh_authorized_keys</span>: <span style="color: #B3DE81;">"{{ lookup('file',  my_test_public_key ) }}"</span>
+    <span style="color: #ffffff;">register</span>: <span style="color: #B3DE81;">result</span>
+</pre>
+</div>
+
+</section>
+<section id="sec-12">
+
+<h2 >Configuration</h2>
+<p>
+Ex: Ansible
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-yaml"><span style="color: #8593AE;">---</span>
+- <span style="color: #ffffff;">hosts</span>: server
+  <span style="color: #ffffff;">sudo</span>: <span style="color: #FFDB45;">yes</span>
+  <span style="color: #ffffff;">sudo_user</span>: root
+
+  <span style="color: #ffffff;">tasks</span>:
+
+  - <span style="color: #ffffff;">name</span>: install mysql-server
+    <span style="color: #ffffff;">apt</span>: name=mysql-server state=present update_cache=yes
+
+  - <span style="color: #ffffff;">name</span>: install ansible dependencies
+    <span style="color: #ffffff;">apt</span>: name=python-mysqldb state=present
+
+  - <span style="color: #ffffff;">name</span>: Ensure mysql is running 
+    <span style="color: #ffffff;">service</span>: name=mysql state=started
+</pre>
+</div>
+
+</section>
+<section id="sec-13">
+
+<h2 >Configuration</h2>
+<p>
+Ex: Chef
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-text">mysql_service 'default' do
+  port '3306'
+  version '5.5'
+  name 'localhost'
+  initial_root_password 'p4ssw0rd'
+  action [:create, :start]
+end
+
+mysql_config 'default' do
+  source 'my.cnf.erb'
+  notifies :restart, 'mysql_service[default]'
+  action :create
+end
+</pre>
+</div>
+
+</section>
+<section id="sec-14">
+
+<h2 >Configuration</h2>
+<p>
+Ex: Docker
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-text">USER nginx
+EXPOSE 4443
+WORKDIR /opt/
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+CMD ["nginx", "-c", "/nginx/nginx.conf", "-g", "daemon off;"]
+</pre>
+</div>
+
+</section>
+<section id="sec-15">
+
+<h2 >Infrastructure services</h2>
+<p>
+Alerting
+<img src="./images/nagios.jpg" alt="nagios.jpg" />
+</p>
+
+</section>
+<section id="sec-16">
+
+<h2 >Monitoring</h2>
+<p>
+Sensu
+<img src="./images/sensu.png" alt="sensu.png" />
+</p>
+
+</section>
+<section id="sec-17">
+
+<h2 >Logging</h2>
+<p>
+ELK
+<img src="./images/elk.png" alt="elk.png" />
+</p>
+
+</section>
+<section id="sec-18">
+
+<h2 >Demo time</h2>
+
+</section>
+<section id="sec-19">
+
+<h2 >Resources</h2>
+</section>
+<section>
+<section id="sec-19-1">
+
+<h3 >Infrastructure as Code book</h3>
+<p>
+<a href="http://infrastructure-as-code.com/">http://infrastructure-as-code.com/</a>
+</p>
+</section>
+
+</section>
+<section id="sec-20">
+
+<h2 >?s</h2>
+<p>
+<img src="./images/qs.png" alt="qs.png" />
+</p>
+
+</section>
+</div>
+</div>
+
+<script src="https://badri.github.io/infra-as-code-ppt/js/head.min.js"></script>
+<script src="https://badri.github.io/infra-as-code-ppt/js/reveal.js"></script>
+
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+
+controls: true,
+progress: true,
+history: false,
+center: true,
+slideNumber: true,
+rollingLinks: false,
+keyboard: true,
+overview: true,
+
+theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+transitionSpeed: 'default',
+multiplex: {
+    secret: '', // null if client
+    id: '', // id, obtained from socket.io server
+    url: '' // Location of socket.io server
+},
+
+// Optional libraries used to extend on reveal.js
+dependencies: [
+ { src: 'https://cdn.jsdelivr.net/reveal.js/3.0.0/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+ { src: 'https://cdn.jsdelivr.net/reveal.js/3.0.0/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'https://cdn.jsdelivr.net/reveal.js/3.0.0/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'https://cdn.jsdelivr.net/reveal.js/3.0.0/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+]
+});
+</script>
+</body>
+</html>
